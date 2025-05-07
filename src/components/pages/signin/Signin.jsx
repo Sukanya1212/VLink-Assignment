@@ -9,6 +9,7 @@ function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState("");
 
   const validateForm = (e) => {
     e.preventDefault();
@@ -22,6 +23,27 @@ function Signin() {
       setError("");
       toast.success(isSignUpActive ? "You signed up successfully! 🎉" : "You signed in successfully! 🎉");
     }
+  };
+
+  // Function to check password strength and update bullet colors
+  const checkPasswordStrength = (password) => {
+    const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$");
+    const mediumRegex = new RegExp("^(?=.*[a-zA-Z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{6,}$");
+    
+    if (strongRegex.test(password)) {
+      setPasswordStrength("strong");
+    } else if (mediumRegex.test(password)) {
+      setPasswordStrength("medium");
+    } else {
+      setPasswordStrength("weak");
+    }
+  };
+
+  // Function to generate bullet colors based on strength
+  const getBulletClass = (strength) => {
+    if (strength === "strong") return "bullet strong";
+    if (strength === "medium") return "bullet medium";
+    return "bullet weak";
   };
 
   return (
@@ -48,7 +70,26 @@ function Signin() {
           </div>
           <div className="input-with-icon">
             <FaLock className="icon" />
-            <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={e => {
+                setPassword(e.target.value);
+                checkPasswordStrength(e.target.value);  // Check password strength
+              }}
+              required
+            />
+          </div>
+          {/* Password Strength Indicator */}
+          <div className="password-strength">
+            {password && (
+              <div className="bullets-container">
+                <span className={getBulletClass(passwordStrength)}></span>
+                <span className={getBulletClass(passwordStrength)}></span>
+                <span className={getBulletClass(passwordStrength)}></span>
+              </div>
+            )}
           </div>
           {error && <p className="error-message">{error}</p>}
           <button type="submit">Sign Up</button>
@@ -58,7 +99,7 @@ function Signin() {
       {/* Sign In Form */}
       <div className="form-container sign-in-container">
         <form onSubmit={validateForm}>
-          <h1>Sign In</h1>
+          <h2 style={{ color: '#6a1b9a' }}>Sign In</h2>
           <div className="social-container">
             <a href="#" className="social"><FaGoogle /></a>
             <a href="#" className="social"><FaTwitter /></a>
